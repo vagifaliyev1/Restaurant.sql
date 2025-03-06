@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS Customers;
 DROP TABLE IF EXISTS Menu;
 DROP TABLE IF EXISTS Orders;
+DROP TABLE IF EXISTS Order_Details;
 
 CREATE TABLE Customers(
   cstmr_id INT PRIMARY KEY,
@@ -70,6 +71,25 @@ VALUES
     (10004, 1001, '2024-03-04 15:00:00', 'Canceled', 15.00);
 
 SELECT * FROM Orders;
+
+CREATE TABLE Order_Details (
+   Order_Detail_id SERIAL PRIMARY KEY,
+   order_id INT NOT NULL,
+   item_id INT NOT NULL,
+   quantity INT NOT NULL CHECK (quantity>0),
+   FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE,
+   FOREIGN KEY (item_id) REFERENCES Menu(item_id) ON DELETE CASCADE 
+);
+
+INSERT INTO Order_Details (Order_Detail_id, order_id, item_id, quantity)
+VALUES
+    (001, 10001, 100, 2), 
+    (002, 10001, 102, 1),  
+    (003, 10002, 101, 3),  
+    (004, 10003, 103, 4);  
+
+SELECT * FROM Order_Details;
+   
 
 
 
