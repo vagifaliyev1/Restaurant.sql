@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS Customers;
 DROP TABLE IF EXISTS Menu;
+DROP TABLE IF EXISTS Orders;
 
 CREATE TABLE Customers(
   cstmr_id INT PRIMARY KEY,
@@ -51,5 +52,26 @@ FROM Menu;
 SELECT * FROM MenuItems;
 
 SELECT * FROM Menu;
+
+CREATE TABLE Orders(
+   order_id SERIAL PRIMARY KEY,
+   cstmr_id INT NOT NULL,
+   order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   status VARCHAR(20) NOT NULL CHECK (status IN('Pending', 'Preparing', 'Delivered', 'Canceled')),
+   total_price DECIMAL(10,2) NOT NULL CHECK (total_price>=0),
+   FOREIGN KEY (cstmr_id) REFERENCES Customers (cstmr_id) ON DELETE CASCADE
+);
+
+INSERT INTO Orders (order_id, cstmr_id, order_date, status, total_price)
+VALUES 
+    (10001, 1001, '2024-03-04 12:30:00', 'Pending', 25.99),
+    (10002, 1002, '2024-03-04 13:15:00', 'Preparing', 18.75),
+    (10003, 1003, '2024-03-04 14:00:00', 'Delivered', 42.50),
+    (10004, 1001, '2024-03-04 15:00:00', 'Canceled', 15.00);
+
+SELECT * FROM Orders;
+
+
+
 
 
