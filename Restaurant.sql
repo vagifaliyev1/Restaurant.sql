@@ -1,7 +1,8 @@
-DROP TABLE IF EXISTS Customers;
-DROP TABLE IF EXISTS Menu;
-DROP TABLE IF EXISTS Orders;
-DROP TABLE IF EXISTS Order_Details;
+DROP TABLE IF EXISTS Customers CASCADE;
+DROP TABLE IF EXISTS Menu CASCADE;
+DROP TABLE IF EXISTS Orders CASCADE;
+DROP TABLE IF EXISTS Order_Details CASCADE;
+DROP TABLE IF EXISTS Payments CASCADE;
 
 CREATE TABLE Customers(
   cstmr_id INT PRIMARY KEY,
@@ -83,12 +84,51 @@ CREATE TABLE Order_Details (
 
 INSERT INTO Order_Details (Order_Detail_id, order_id, item_id, quantity)
 VALUES
-    (001, 10001, 100, 2), 
-    (002, 10001, 102, 1),  
-    (003, 10002, 101, 3),  
-    (004, 10003, 103, 4);  
+    (001, 10001, 100, 2),  -- 2 Cheeseburgers in order 10001
+    (002, 10001, 102, 1),  -- 1 Chocolate Cake in order 10001
+    (003, 10002, 101, 3),  -- 3 Margherita Pizzas in order 10002
+    (004, 10003, 103, 4);  -- 4 Coca-Colas in order 10003
 
 SELECT * FROM Order_Details;
+
+CREATE TABLE Payments(
+   payment_id SERIAL PRIMARY KEY,
+   order_id INT NOT NULL,
+   payment_method VARCHAR(20) NOT NULL CHECK(payment_method IN('Card', 'Cash', 'Digital Wallet')),
+   payment_status VARCHAR(20) NOT NULL CHECK(payment_status IN('Pending', 'Paid', 'Failed')),
+   FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE
+);
+
+INSERT INTO Payments (payment_id, order_id, payment_method, payment_status)
+
+VALUES 
+    (201, 10001, 'Card', 'Paid'),
+    (202, 10002, 'Cash', 'Pending'),
+    (203, 10003, 'Digital Wallet', 'Failed');
+	
+SELECT * FROM Payments;
+
+SELECT * FROM Payments NATURAL JOIN Orders;
+
+SELECT p.payment_id, p.payment_method, p.payment_status, o.order_id, o.total_price
+FROM Payments p
+INNER JOIN Orders o ON p.order_id = o.order_id;
+
+SELECT p.payment_id, p.payment_method, p.payment_status, o.order_id, o.total_price
+FROM Payments p
+LEFT JOIN Orders o ON p.order_id = o.order_id;
+
+-- RIGHT OUTER JOIN between Payments and Orders
+SELECT p.payment_id, p.payment_method, p.payment_status, o.order_id, o.total_price
+FROM Payments p
+RIGHT JOIN Orders o ON p.order_id = o.order_id;
+
+-- FULL OUTER JOIN between Payments and Orders
+SELECT p.payment_id, p.payment_method, p.payment_status, o.order_id, o.total_price
+FROM Payments p
+FULL OUTER JOIN Orders o ON p.order_id = o.order_id;
+
+     
    
 
 
